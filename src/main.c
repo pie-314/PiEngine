@@ -13,7 +13,7 @@ void chudnovsky_term(mpfr_t term, int k);
 
 int main() {
   mpfr_t sum, term, pi, C, sqrtC;
-  // mpfr_set_default_prec(5000);
+  mpfr_set_default_prec(5000);
   mpfr_inits(sum, term, pi, C, sqrtC, (mpfr_ptr)0);
 
   mpfr_set_ui(sqrtC, E, MPFR_RNDN);
@@ -24,7 +24,7 @@ int main() {
 
   mpfr_set_ui(sum, 0, MPFR_RNDN);
 
-  int N = 10;
+  int N = 1000;
   for (int k = 0; k < N; k++) {
     chudnovsky_term(term, k);
     // mpfr_printf("term %d = %.50Rf\n", k, term);
@@ -78,6 +78,9 @@ void chudnovsky_term(mpfr_t term, int k) {
   mpfr_set_z(den_f, denominator, MPFR_RNDN);
 
   mpfr_div(term, num_f, den_f, MPFR_RNDN);
+  if (k % 2 != 0) {
+    mpfr_neg(term, term, MPFR_RNDN);
+  }
 
   // Cleanup
   mpz_clear(six_k_fact);
