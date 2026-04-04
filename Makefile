@@ -1,23 +1,17 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O2
-LIBS = -lgmp
-SRC = src/main.c src/cli.c src/utils.c 
-OBJ = $(SRC:.c=.o)
+LIBS = -lgmp -lmpfr
+
 TARGET = piengine
+SRC = src/main.c
 
 all: $(TARGET)
 
-$(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) src/main.c -o pi $(LIBS)
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) $(SRC) -o $(TARGET) $(LIBS)
 
-%.o: %.c 
-	$(CC) $(CFLAGS) -c $< -o $@
-
-clean:
-	rm -rf $(OBJ) $(TARGET)
-
-run: $(TARGET)
+run: all
 	./$(TARGET)
 
-run:
-	./piengine
+clean:
+	rm -f $(TARGET) src/*.o
