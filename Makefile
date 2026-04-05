@@ -3,7 +3,10 @@ CFLAGS = -Wall -Wextra -O2
 LIBS = -lgmp -lmpfr
 
 TARGET = piengine
-SRC = src/main.c
+SRC = \
+	  src/main.c \
+	  src/chudnovsky.c
+
 
 all: $(TARGET)
 
