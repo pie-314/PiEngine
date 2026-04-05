@@ -63,12 +63,13 @@ void chudnovsky_term(mpfr_t term, int k) {
   mpfr_clear(num_f);
   mpfr_clear(den_f);
 }
+void set_precision(int digits) {
+  int precision = digits * 3.321928 + 50;
+  mpfr_set_default_prec(precision);
+}
 
 void compute_pi(mpfr_t pi, int digits) {
-  int precision = digits * 3.321928 + 50;
   int iterations = digits / 14 + 1;
-
-  mpfr_set_default_prec(precision);
 
   mpfr_t sum, term, C;
   mpfr_inits(sum, term, C, (mpfr_ptr)0);

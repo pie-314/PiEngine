@@ -14,6 +14,7 @@ void chudnovsky_term(mpfr_t term, int k);
 
 int main() {
   int digits = 1000;
+  set_precision(digits);
 
   mpfr_t pi;
   mpfr_init(pi);
