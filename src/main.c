@@ -1,11 +1,11 @@
+#include <stdio.h>
+#define MPFR_USE_FILE
 #include "chudnovsky.h"
 #include "cli.h"
+#include <gmp.h>
 #include <mpfr.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
 int main(int argc, char *argv[]) {
   // Parse command-line arguments
   Args args = parse_args(argc, argv);
@@ -21,7 +21,8 @@ int main(int argc, char *argv[]) {
   if (strlen(args.output_file) > 0) {
     output = fopen(args.output_file, "w");
     if (output == NULL) {
-      fprintf(stderr, "Error: unable to open output file '%s'\n", args.output_file);
+      fprintf(stderr, "Error: unable to open output file '%s'\n",
+              args.output_file);
       return 1;
     }
   }
@@ -48,28 +49,19 @@ int main(int argc, char *argv[]) {
   compute_pi(pi, args.digits);
   timer_stop(&compute_timer);
 
-  // Format and write output
-  // Note: allocating buffer dynamically for large digit counts
-  size_t buffer_size = args.digits + 100;
-  char *pi_str = (char *)malloc(buffer_size);
-  if (pi_str == NULL) {
-    fprintf(stderr, "Error: failed to allocate memory for output\n");
-    mpfr_clear(pi);
-    fclose(output);
-    return 1;
-  }
-  
-  mpfr_sprintf(pi_str, "%.*Rf", args.digits, pi);
-  fprintf(output, "Pi = %s\n", pi_str);
-  free(pi_str);
+  // Write pi to file (no screen output)
+  mpfr_fprintf(output, "%.*Rf\n", args.digits, pi);
+  fflush(output);
 
   timer_stop(&total_timer);
 
   // Print timing information
   if (args.verbose) {
     fprintf(stderr, "\n=== Timing Results ===\n");
-    fprintf(stderr, "Computation time: %.4f seconds\n", timer_elapsed_seconds(compute_timer));
-    fprintf(stderr, "Total time: %.4f seconds\n", timer_elapsed_seconds(total_timer));
+    fprintf(stderr, "Computation time: %.4f seconds\n",
+            timer_elapsed_seconds(compute_timer));
+    fprintf(stderr, "Total time: %.4f seconds\n",
+            timer_elapsed_seconds(total_timer));
   }
 
   // Cleanup
