@@ -30,7 +30,9 @@ void chudnovsky_term(mpfr_t term, int k) {
   mpz_fac_ui(k_fact, k);
 
   // numerator = (6k)! * (A + Bk)
-  mpz_set_ui(temp, A + B * k);
+  mpz_set_ui(temp, B);
+  mpz_mul_ui(temp, temp, k); // temp = B*k
+  mpz_add_ui(temp, temp, A); // temp = A + B*k
   mpz_mul(numerator, six_k_fact, temp);
 
   // denominator = (3k)! * (k!)^3 * (C3)^k
@@ -64,12 +66,12 @@ void chudnovsky_term(mpfr_t term, int k) {
   mpfr_clear(den_f);
 }
 void set_precision(int digits) {
-  int precision = digits * 3.321928 + 50;
+  int precision = digits * 3.321928 + 10000;
   mpfr_set_default_prec(precision);
 }
 
 void compute_pi(mpfr_t pi, int digits) {
-  int iterations = digits / 14 + 1;
+  int iterations = digits / 14 + 2;
 
   mpfr_t sum, term, C;
   mpfr_inits(sum, term, C, (mpfr_ptr)0);

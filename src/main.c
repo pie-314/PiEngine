@@ -5,10 +5,13 @@
 #include <gmp.h>
 #include <mpfr.h>
 #include <string.h>
-#include <time.h>
+
 int main(int argc, char *argv[]) {
   // Parse command-line arguments
   Args args = parse_args(argc, argv);
+
+  // Set precision for MPFR
+  set_precision(args.digits);
 
   // Show help if requested
   if (args.help) {
@@ -37,9 +40,6 @@ int main(int argc, char *argv[]) {
             strlen(args.output_file) > 0 ? args.output_file : "stdout");
     fprintf(stderr, "Starting computation...\n");
   }
-
-  // Set precision for MPFR
-  set_precision(args.digits);
 
   // Initialize and compute pi
   mpfr_t pi;
