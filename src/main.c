@@ -4,45 +4,82 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-// Constant terms
-#define A 13591409
-#define B 545140134
-#define J 640320
-#define D 426880
-#define E 10005
-#define C3 262537412640768000
-
-void chudnovsky_term(mpfr_t term, int k);
+#include <time.h>
 
 int main(int argc, char *argv[]) {
-  int digits = 1000;
+  // Parse command-line arguments
+  Args args = parse_args(argc, argv);
 
-  // Parse arguments (start from 1 to skip program name)
-  for (int i = 1; i < argc; i++) {
-    printf("argument %d is %s\n", i, argv[i]);
+  // Show help if requested
+  if (args.help) {
+    print_help();
+    return 0;
+  }
 
-    // strcmp returns 0 when equal, so check for == 0
-    if (strcmp(argv[i], "--digits") == 0 || strcmp(argv[i], "-d") == 0) {
-      if (i + 1 < argc) {
-        digits = atoi(argv[++i]); // Parse the next argument as integer
-        printf("Input is a digit: %d\n", digits);
-      } else {
-        fprintf(stderr, "Error: --digits requires a value\n");
-        return 1;
-      }
+  // Set output stream (stdout or file)
+  FILE *output = stdout;
+  if (strlen(args.output_file) > 0) {
+    output = fopen(args.output_file, "w");
+    if (output == NULL) {
+      fprintf(stderr, "Error: unable to open output file '%s'\n", args.output_file);
+      return 1;
     }
   }
 
-  set_precision(digits);
+  // Initialize timing
+  Timer total_timer = timer_start();
 
+  if (args.verbose) {
+    fprintf(stderr, "=== PiEngine Computation ===\n");
+    fprintf(stderr, "Target digits: %d\n", args.digits);
+    fprintf(stderr, "Output to: %s\n\n",
+            strlen(args.output_file) > 0 ? args.output_file : "stdout");
+    fprintf(stderr, "Starting computation...\n");
+  }
+
+  // Set precision for MPFR
+  set_precision(args.digits);
+
+  // Initialize and compute pi
   mpfr_t pi;
   mpfr_init(pi);
 
-  compute_pi(pi, digits);
+  Timer compute_timer = timer_start();
+  compute_pi(pi, args.digits);
+  timer_stop(&compute_timer);
 
-  mpfr_printf("Pi = %.*Rf\n", digits, pi);
+  // Format and write output
+  // Note: allocating buffer dynamically for large digit counts
+  size_t buffer_size = args.digits + 100;
+  char *pi_str = (char *)malloc(buffer_size);
+  if (pi_str == NULL) {
+    fprintf(stderr, "Error: failed to allocate memory for output\n");
+    mpfr_clear(pi);
+    fclose(output);
+    return 1;
+  }
+  
+  mpfr_sprintf(pi_str, "%.*Rf", args.digits, pi);
+  fprintf(output, "Pi = %s\n", pi_str);
+  free(pi_str);
 
+  timer_stop(&total_timer);
+
+  // Print timing information
+  if (args.verbose) {
+    fprintf(stderr, "\n=== Timing Results ===\n");
+    fprintf(stderr, "Computation time: %.4f seconds\n", timer_elapsed_seconds(compute_timer));
+    fprintf(stderr, "Total time: %.4f seconds\n", timer_elapsed_seconds(total_timer));
+  }
+
+  // Cleanup
   mpfr_clear(pi);
+  if (strlen(args.output_file) > 0) {
+    fclose(output);
+    if (args.verbose) {
+      fprintf(stderr, "Output written to: %s\n", args.output_file);
+    }
+  }
+
   return 0;
 }
