@@ -5,7 +5,8 @@ LIBS = -lgmp -lmpfr
 TARGET = piengine
 SRC = \
 	  src/main.c \
-	  src/chudnovsky.c
+	  src/chudnovsky.c \
+	  src/cli.c
 
 
 all: $(TARGET)
