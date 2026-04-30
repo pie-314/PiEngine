@@ -1,18 +1,28 @@
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define MAX_LINE_LENGTH 1000000
-#define MAX_DIGITS 100000
 
 typedef struct {
-  char real_pi[MAX_DIGITS];
-  char calculated_pi[MAX_DIGITS];
+  char *real_pi;
+  char *calculated_pi;
   int real_length;
   int calculated_length;
   int accurate_digits;
   int total_compared;
 } ComparisonResult;
+
+long get_file_size(const char *filename) {
+  FILE *file = fopen(filename, "r");
+  if (!file)
+    return -1;
+  fseek(file, 0L, SEEK_END);
+  long size = ftell(file);
+  fclose(file);
+  return size;
+}
 
 // remove space
 void remove_whitespace(char *str) {
@@ -33,9 +43,13 @@ int load_pi_from_file(const char *filename, char *buffer, int max_length) {
   }
 
   int total_length = 0;
-  char line[MAX_LINE_LENGTH];
+  char *line = malloc(MAX_LINE_LENGTH);
+  if (!line) {
+    fclose(file);
+    return -1;
+  }
 
-  while (fgets(line, sizeof(line), file) && total_length < max_length) {
+  while (fgets(line, MAX_LINE_LENGTH, file) && total_length < max_length) {
     remove_whitespace(line);
 
     int line_length = strlen(line);
@@ -50,6 +64,7 @@ int load_pi_from_file(const char *filename, char *buffer, int max_length) {
     total_length += line_length;
   }
 
+  free(line);
   fclose(file);
   buffer[total_length] = '\0';
   return total_length;
@@ -81,9 +96,26 @@ int main(int argc, char *argv[]) {
 
   printf("   Pi Value Comparison Test\n\n");
 
+  long real_size = get_file_size(argv[1]);
+  long calc_size = get_file_size(argv[2]);
+
+  if (real_size < 0 || calc_size < 0) {
+    fprintf(stderr, "Error: Could not determine file sizes\n");
+    return 1;
+  }
+
+  result.real_pi = malloc(real_size + 1);
+  result.calculated_pi = malloc(calc_size + 1);
+
+  if (!result.real_pi || !result.calculated_pi) {
+    fprintf(stderr, "Error: Memory allocation failed\n");
+    return 1;
+  }
+
   /* Load real pi values */
   printf("Loading real pi from: %s\n", argv[1]);
-  result.real_length = load_pi_from_file(argv[1], result.real_pi, MAX_DIGITS);
+  result.real_length =
+      load_pi_from_file(argv[1], result.real_pi, (int)real_size);
   if (result.real_length < 0) {
     return 1;
   }
@@ -92,7 +124,7 @@ int main(int argc, char *argv[]) {
   /* Load calculated pi values */
   printf("Loading calculated pi from: %s\n", argv[2]);
   result.calculated_length =
-      load_pi_from_file(argv[2], result.calculated_pi, MAX_DIGITS);
+      load_pi_from_file(argv[2], result.calculated_pi, (int)calc_size);
   if (result.calculated_length < 0) {
     return 1;
   }
@@ -128,5 +160,9 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  free(result.real_pi);
+  free(result.calculated_pi);
+
   return (result.accurate_digits == result.total_compared) ? 0 : 1;
 }
+
