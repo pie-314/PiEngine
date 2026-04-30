@@ -9,62 +9,6 @@
 #define E 10005
 #define C3 262537412640768000
 
-void chudnovsky_term(mpfr_t term, int k) {
-  mpz_t six_k_fact, three_k_fact, k_fact;
-  mpz_t numerator, denominator, temp;
-
-  mpz_init(six_k_fact);
-  mpz_init(three_k_fact);
-  mpz_init(k_fact);
-  mpz_init(numerator);
-  mpz_init(denominator);
-  mpz_init(temp);
-
-  // (6k)!
-  mpz_fac_ui(six_k_fact, 6 * k);
-
-  // (3k)!
-  mpz_fac_ui(three_k_fact, 3 * k);
-
-  // (k)!
-  mpz_fac_ui(k_fact, k);
-
-  // numerator = (6k)! * (A + Bk)
-  mpz_set_ui(temp, B);
-  mpz_mul_ui(temp, temp, k); // temp = B*k
-  mpz_add_ui(temp, temp, A); // temp = A + B*k
-  mpz_mul(numerator, six_k_fact, temp);
-
-  // denominator = (3k)! * (k!)^3 * (C3)^k
-  mpz_pow_ui(temp, k_fact, 3); // (k!)^3
-  mpz_mul(denominator, three_k_fact, temp);
-
-  mpz_ui_pow_ui(temp, C3, k); // (C3)^k
-  mpz_mul(denominator, denominator, temp);
-
-  // Convert to mpfr and divide
-  mpfr_t num_f, den_f;
-  mpfr_init(num_f);
-  mpfr_init(den_f);
-
-  mpfr_set_z(num_f, numerator, MPFR_RNDN);
-  mpfr_set_z(den_f, denominator, MPFR_RNDN);
-
-  mpfr_div(term, num_f, den_f, MPFR_RNDN);
-  if (k % 2 != 0) {
-    mpfr_neg(term, term, MPFR_RNDN);
-  }
-
-  // Cleanup
-  mpz_clear(six_k_fact);
-  mpz_clear(three_k_fact);
-  mpz_clear(k_fact);
-  mpz_clear(numerator);
-  mpz_clear(denominator);
-  mpz_clear(temp);
-  mpfr_clear(num_f);
-  mpfr_clear(den_f);
-}
 void set_precision(int digits) {
   int precision = digits * 3.321928 + 10000;
   mpfr_set_default_prec(precision);

@@ -25,11 +25,12 @@ PiEngine is being developed in multiple versions:
 | V3      | 10,000,000 digits   | Binary splitting              |
 | V4      | 100,000,000+ digits | FFT + Multi-threading         |
 
-### Current Version: V1
+### Current Version: V2
 
-**Goal:** Compute **100,000 digits of π** correctly and reliably.
+**Goal:** Compute **1,000,000 digits of π** correctly and reliably.
 
-This version focuses on correctness, architecture, and understanding the algorithm rather than heavy optimization.
+PiEngine has now reached the **1,000,000 digits** milestone.
+This version focuses on improving performance while preserving correctness and clean project structure.
 
 ---
 
@@ -37,9 +38,11 @@ This version focuses on correctness, architecture, and understanding the algorit
 
 PiEngine uses the **Chudnovsky series**:
 
-[
-\pi = \frac{426880 \sqrt{10005}}{\sum_{k=0}^{\infty} \text{term}_k}
-]
+![Chudnovsky formula](https://latex.codecogs.com/png.image?%5Cdpi%7B160%7D%20%5Cpi%20%3D%20%5Cfrac%7B426880%5Csqrt%7B10005%7D%7D%7B%5Csum_%7Bk%3D0%7D%5E%7B%5Cinfty%7D%20%5Cmathrm%7Bterm%7D_k%7D)
+
+The individual term is:
+
+![Chudnovsky term formula](https://latex.codecogs.com/png.image?%5Cdpi%7B160%7D%20%5Cmathrm%7Bterm%7D_k%20%3D%20%5Cfrac%7B(-1)%5Ek(6k)%21(13591409%20%2B%20545140134k)%7D%7B(3k)%21(k!)%5E3%20640320%5E%7B3k%7D%7D)
 
 Each term of the series adds approximately **14 digits** of precision.
 
@@ -117,13 +120,13 @@ make
 
 ---
 
-## Current Limitations (V1)
+## Current Limitations (V2)
 
-Version 1 recomputes factorials from scratch for each term, which is slow for very large digit counts.
+Version 2 improves performance over the basic factorial-based approach, but it is still not the final architecture for very large digit counts.
 
-Because of this, Version 1 is expected to work efficiently up to:
+Because of this, Version 2 is expected to work efficiently up to:
 
-> **~100,000 digits**
+> **~1,000,000 digits**
 
 Future versions will implement faster algorithms.
 
@@ -159,5 +162,5 @@ Planned upgrades:
 PiEngine is not just a π calculator.
 It is a project to explore **high-precision computation, numerical methods, and performance optimization in C**.
 
-**Current Goal:** 100,000 digits
-**Next Goal:** 1,000,000 digits
+**Current Milestone:** 1,000,000 digits achieved
+**Next Goal:** 10,000,000 digits
