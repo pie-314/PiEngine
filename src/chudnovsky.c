@@ -14,68 +14,104 @@ void set_precision(int digits) {
   mpfr_set_default_prec(precision);
 }
 
-void compute_pi(mpfr_t pi, int digits) {
-  int iterations = digits / 14 + 2;
+void compute_bs(long a, long b, mpz_t P, mpz_t Q, mpz_t T) {
+  if (b - a == 1) {
+    // case of k = 0
+    if (a == 0) {
+      mpz_set_ui(P, 1);
+      mpz_set_ui(Q, 1);
+      mpz_set_ui(T, A);
+    } else {
 
-  mpfr_t sum, term, C;
-  mpfr_t num, den, temp, ratio1, ratio2;
+      mpz_t p, q, t, tmp;
+      mpz_inits(p, q, t, tmp, NULL);
 
-  mpfr_inits(sum, term, C, num, den, temp, ratio1, ratio2, (mpfr_ptr)0);
+      // P = (6k-5)(2k-1)(6k-1)
+      mpz_set_ui(p, 6 * a - 5);
+      mpz_mul_ui(p, p, 2 * a - 1);
+      mpz_mul_ui(p, p, 6 * a - 1);
 
-  // C = 426880 * rt(10005)
-  compute_constant(C);
+      // Q = k^3 * C3
+      mpz_set_ui(q, a);
+      mpz_pow_ui(q, q, 3);
+      mpz_mul_ui(q, q, C3);
 
-  mpfr_set_ui(term, A, MPFR_RNDN);
-  mpfr_set(sum, term, MPFR_RNDN);
+      // T = P * (A + Bk)
+      mpz_set_ui(tmp, B);
+      mpz_mul_ui(tmp, tmp, a);
+      mpz_add_ui(tmp, tmp, A);
 
-  for (int k = 1; k < iterations; k++) {
+      mpz_mul(t, p, tmp);
 
-    // num = (6k-5)(6k-4)...(6k)
-    mpfr_set_ui(num, 6 * k - 5, MPFR_RNDN);
-    for (int i = 1; i < 6; i++) {
-      mpfr_mul_ui(num, num, 6 * k - 5 + i, MPFR_RNDN);
+      // Alternate sign
+      if (a % 2 != 0)
+        mpz_neg(t, t);
+
+      // Assign results to output variables
+      mpz_set(P, p);
+      mpz_set(Q, q);
+      mpz_set(T, t);
+
+      // Free temporary variables
+      mpz_clears(p, q, t, tmp, NULL);
     }
 
-    // den = k^3
-    mpfr_set_ui(den, k, MPFR_RNDN);
-    mpfr_pow_ui(den, den, 3, MPFR_RNDN);
+  } else {
+    long m = (a + b) / 2;
 
-    // multiply (3k-2)(3k-1)(3k)
-    mpfr_set_ui(temp, 3 * k - 2, MPFR_RNDN);
-    mpfr_mul_ui(temp, temp, 3 * k - 1, MPFR_RNDN);
-    mpfr_mul_ui(temp, temp, 3 * k, MPFR_RNDN);
-    mpfr_mul(den, den, temp, MPFR_RNDN);
+    mpz_t P1, Q1, T1;
+    mpz_t P2, Q2, T2;
 
-    // multiply by C3
-    mpfr_mul_ui(den, den, C3, MPFR_RNDN);
+    mpz_inits(P1, Q1, T1, P2, Q2, T2, NULL);
 
-    // ratio1 = num / den
-    mpfr_div(ratio1, num, den, MPFR_RNDN);
+    compute_bs(a, m, P1, Q1, T1);
+    compute_bs(m, b, P2, Q2, T2);
 
-    // ratio2 = (A + Bk) / (A + B(k-1))
-    mpfr_set_ui(ratio2, B, MPFR_RNDN);
-    mpfr_mul_ui(ratio2, ratio2, k, MPFR_RNDN);
-    mpfr_add_ui(ratio2, ratio2, A, MPFR_RNDN);
+    mpz_mul(P, P1, P2);
+    mpz_mul(Q, Q1, Q2);
 
-    mpfr_set_ui(temp, B, MPFR_RNDN);
-    mpfr_mul_ui(temp, temp, k - 1, MPFR_RNDN);
-    mpfr_add_ui(temp, temp, A, MPFR_RNDN);
+    mpz_t temp1, temp2;
+    mpz_inits(temp1, temp2, NULL);
 
-    mpfr_div(ratio2, ratio2, temp, MPFR_RNDN);
+    mpz_mul(temp1, T1, Q2);
+    mpz_mul(temp2, P1, T2);
+    mpz_add(T, temp1, temp2);
 
-    // term = term * ratio1 * ratio2
-    mpfr_mul(term, term, ratio1, MPFR_RNDN);
-    mpfr_mul(term, term, ratio2, MPFR_RNDN);
-
-    mpfr_neg(term, term, MPFR_RNDN);
-
-    mpfr_add(sum, sum, term, MPFR_RNDN);
+    mpz_clears(P1, Q1, T1, P2, Q2, T2, temp1, temp2, NULL);
   }
+}
 
-  // pi = C / sum
-  mpfr_div(pi, C, sum, MPFR_RNDN);
+void compute_pi(mpfr_t pi, int digits) {
 
-  mpfr_clears(sum, term, C, num, den, temp, ratio1, ratio2, (mpfr_ptr)0);
+  int iterations = digits / 14 + 2;
+
+  mpz_t P, Q, T;
+  mpz_inits(P, Q, T, NULL);
+
+  compute_bs(0, iterations, P, Q, T);
+
+  mpfr_t C, sqrtC, T_f, Q_f;
+  mpfr_inits(C, sqrtC, T_f, Q_f, NULL);
+
+  // sqrtC = sqrt(10005)
+  mpfr_set_ui(sqrtC, E, MPFR_RNDN);
+  mpfr_sqrt(sqrtC, sqrtC, MPFR_RNDN);
+
+  // C = 426880 * sqrt(10005)
+  mpfr_set_ui(C, D, MPFR_RNDN);
+  mpfr_mul(C, C, sqrtC, MPFR_RNDN);
+
+  // Convert big integers to floating point
+  mpfr_set_z(T_f, T, MPFR_RNDN); // T → mpfr
+  mpfr_set_z(Q_f, Q, MPFR_RNDN); // Q → mpfr
+
+  // pi = (C * Q) / T
+  mpfr_mul(Q_f, Q_f, C, MPFR_RNDN);  // Q = Q * C
+  mpfr_div(pi, Q_f, T_f, MPFR_RNDN); // pi = Q / T
+
+  // Cleanup
+  mpz_clears(P, Q, T, NULL);
+  mpfr_clears(C, sqrtC, T_f, Q_f, NULL);
 }
 
 void compute_constant(mpfr_t C) {
