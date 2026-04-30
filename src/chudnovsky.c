@@ -1,4 +1,5 @@
 #include "chudnovsky.h"
+#include <gmp.h>
 #include <mpfr.h>
 
 // Constant terms
@@ -7,7 +8,6 @@
 #define J 640320
 #define D 426880
 #define E 10005
-#define C3 262537412640768000
 
 void set_precision(int digits) {
   int precision = digits * 3.321928 + 10000;
@@ -35,7 +35,6 @@ void compute_bs(long a, long b, mpz_t P, mpz_t Q, mpz_t T) {
       mpz_set_ui(q, a);
       mpz_pow_ui(q, q, 3);
       mpz_mul_ui(q, q, C3);
-
       // T = P * (A + Bk)
       mpz_set_ui(tmp, B);
       mpz_mul_ui(tmp, tmp, a);

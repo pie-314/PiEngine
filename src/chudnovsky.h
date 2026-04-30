@@ -6,7 +6,7 @@
 #define J 640320
 #define D 426880
 #define E 10005
-#define C3 262537412640768000
+#define C3 10939058860032000
 
 #include <mpfr.h>
 
