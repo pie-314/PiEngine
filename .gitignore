@@ -1,4 +1,3 @@
 pi
 piengine
-*.md
-!README.md
+./_local_learn/*

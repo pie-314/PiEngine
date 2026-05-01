@@ -13,6 +13,6 @@
 void compute_pi(mpfr_t pi, int digits);
 void chudnovsky_term(mpfr_t term, int k);
 void compute_constant(mpfr_t C);
-void set_precision(int digits);
+void set_precision(long long digits);
 
 #endif

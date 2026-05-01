@@ -9,8 +9,8 @@
 #define D 426880
 #define E 10005
 
-void set_precision(int digits) {
-  int precision = digits * 3.321928 + 10000;
+void set_precision(long long digits) {
+  mpfr_prec_t precision = (mpfr_prec_t)digits * 3.321928 + 100000;
   mpfr_set_default_prec(precision);
 }
 
