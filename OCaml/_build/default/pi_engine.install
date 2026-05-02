@@ -1,0 +1,36 @@
+lib: [
+  "_build/install/default/lib/pi_engine/META"
+  "_build/install/default/lib/pi_engine/dune-package"
+  "_build/install/default/lib/pi_engine/lib/bigint.ml" {"lib/bigint.ml"}
+  "_build/install/default/lib/pi_engine/lib/bigint.mli" {"lib/bigint.mli"}
+  "_build/install/default/lib/pi_engine/lib/chudnovsky.ml" {"lib/chudnovsky.ml"}
+  "_build/install/default/lib/pi_engine/lib/chudnovsky.mli" {"lib/chudnovsky.mli"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib.a" {"lib/pi_engine_lib.a"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib.cma" {"lib/pi_engine_lib.cma"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib.cmi" {"lib/pi_engine_lib.cmi"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib.cmt" {"lib/pi_engine_lib.cmt"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib.cmx" {"lib/pi_engine_lib.cmx"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib.cmxa" {"lib/pi_engine_lib.cmxa"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib.ml" {"lib/pi_engine_lib.ml"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Bigint.cmi" {"lib/pi_engine_lib__Bigint.cmi"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Bigint.cmt" {"lib/pi_engine_lib__Bigint.cmt"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Bigint.cmti" {"lib/pi_engine_lib__Bigint.cmti"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Bigint.cmx" {"lib/pi_engine_lib__Bigint.cmx"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Chudnovsky.cmi" {"lib/pi_engine_lib__Chudnovsky.cmi"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Chudnovsky.cmt" {"lib/pi_engine_lib__Chudnovsky.cmt"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Chudnovsky.cmti" {"lib/pi_engine_lib__Chudnovsky.cmti"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Chudnovsky.cmx" {"lib/pi_engine_lib__Chudnovsky.cmx"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Utils.cmi" {"lib/pi_engine_lib__Utils.cmi"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Utils.cmt" {"lib/pi_engine_lib__Utils.cmt"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Utils.cmti" {"lib/pi_engine_lib__Utils.cmti"}
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib__Utils.cmx" {"lib/pi_engine_lib__Utils.cmx"}
+  "_build/install/default/lib/pi_engine/lib/utils.ml" {"lib/utils.ml"}
+  "_build/install/default/lib/pi_engine/lib/utils.mli" {"lib/utils.mli"}
+  "_build/install/default/lib/pi_engine/opam"
+]
+libexec: [
+  "_build/install/default/lib/pi_engine/lib/pi_engine_lib.cmxs" {"lib/pi_engine_lib.cmxs"}
+]
+bin: [
+  "_build/install/default/bin/pi_engine"
+]

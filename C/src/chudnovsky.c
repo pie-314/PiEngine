@@ -5,9 +5,6 @@
 // Constant terms
 #define A 13591409
 #define B 545140134
-#define J 640320
-#define D 426880
-#define E 10005
 
 void set_precision(long long digits) {
   mpfr_prec_t precision = (mpfr_prec_t)digits * 3.321928 + 100000;

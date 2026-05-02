@@ -1,0 +1,9 @@
+package "lib" (
+  directory = "lib"
+  description = ""
+  requires = "zarith"
+  archive(byte) = "pi_engine_lib.cma"
+  archive(native) = "pi_engine_lib.cmxa"
+  plugin(byte) = "pi_engine_lib.cma"
+  plugin(native) = "pi_engine_lib.cmxs"
+)

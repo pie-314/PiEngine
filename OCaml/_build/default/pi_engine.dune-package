@@ -1,0 +1,76 @@
+(lang dune 3.22)
+(name pi_engine)
+(sections (lib .) (libexec .) (bin ../../bin))
+(files
+ (lib
+  (META
+   dune-package
+   lib/bigint.ml
+   lib/bigint.mli
+   lib/chudnovsky.ml
+   lib/chudnovsky.mli
+   lib/pi_engine_lib.a
+   lib/pi_engine_lib.cma
+   lib/pi_engine_lib.cmi
+   lib/pi_engine_lib.cmt
+   lib/pi_engine_lib.cmx
+   lib/pi_engine_lib.cmxa
+   lib/pi_engine_lib.ml
+   lib/pi_engine_lib__Bigint.cmi
+   lib/pi_engine_lib__Bigint.cmt
+   lib/pi_engine_lib__Bigint.cmti
+   lib/pi_engine_lib__Bigint.cmx
+   lib/pi_engine_lib__Chudnovsky.cmi
+   lib/pi_engine_lib__Chudnovsky.cmt
+   lib/pi_engine_lib__Chudnovsky.cmti
+   lib/pi_engine_lib__Chudnovsky.cmx
+   lib/pi_engine_lib__Utils.cmi
+   lib/pi_engine_lib__Utils.cmt
+   lib/pi_engine_lib__Utils.cmti
+   lib/pi_engine_lib__Utils.cmx
+   lib/utils.ml
+   lib/utils.mli
+   opam))
+ (libexec (lib/pi_engine_lib.cmxs))
+ (bin (pi_engine)))
+(library
+ (name pi_engine.lib)
+ (kind normal)
+ (archives (byte lib/pi_engine_lib.cma) (native lib/pi_engine_lib.cmxa))
+ (plugins (byte lib/pi_engine_lib.cma) (native lib/pi_engine_lib.cmxs))
+ (native_archives lib/pi_engine_lib.a)
+ (requires zarith)
+ (main_module_name Pi_engine_lib)
+ (modes byte native)
+ (modules
+  (wrapped
+   (group
+    (alias
+     (obj_name pi_engine_lib)
+     (visibility public)
+     (kind alias)
+     (source (path Pi_engine_lib) (impl (path lib/pi_engine_lib.ml-gen))))
+    (name Pi_engine_lib)
+    (modules
+     (module
+      (obj_name pi_engine_lib__Bigint)
+      (visibility public)
+      (source
+       (path Bigint)
+       (intf (path lib/bigint.mli))
+       (impl (path lib/bigint.ml))))
+     (module
+      (obj_name pi_engine_lib__Chudnovsky)
+      (visibility public)
+      (source
+       (path Chudnovsky)
+       (intf (path lib/chudnovsky.mli))
+       (impl (path lib/chudnovsky.ml))))
+     (module
+      (obj_name pi_engine_lib__Utils)
+      (visibility public)
+      (source
+       (path Utils)
+       (intf (path lib/utils.mli))
+       (impl (path lib/utils.ml))))))
+   (wrapped true))))
