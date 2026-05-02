@@ -1,0 +1,34 @@
+# Dune build directory
+_build/
+
+# Merlin configuration
+.merlin
+.merlin-conf/
+
+# Generated opam files
+*.opam
+*.install
+
+# Compiled binaries
+*.exe
+
+# Object files and artifacts
+*.cmi
+*.cmo
+*.cmt
+*.cmti
+*.cmx
+*.o
+*.a
+*.cma
+*.cmxa
+*.cmxs
+
+# Local environment files
+.env
+.DS_Store
+
+# Editor backups
+*~
+#*#
+.#*
