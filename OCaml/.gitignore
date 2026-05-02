@@ -1,6 +1,9 @@
 # Dune build directory
 _build/
 
+# Ignore all text files
+*.txt
+
 # Merlin configuration
 .merlin
 .merlin-conf/

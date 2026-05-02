@@ -1,4 +1,4 @@
-open Z
+open Bigint
 
 let constant_a = of_int 13591409
 let constant_b = of_int 545140134
@@ -45,7 +45,7 @@ let rec compute_bs n1 n2 =
     (p, q, t)
 
 let compute_pi digits =
-  let terms = add (div (of_int digits) (of_int 14)) one in
+  let terms = add (div (of_int digits) (of_int 14)) (of_int 2) in
   let (_, q, t) = compute_bs zero terms in
   let d = of_int 426880 in
   let e = of_int 10005 in

@@ -1,3 +1,8 @@
 (test
  (name test_pi_engine)
  (libraries pi_engine_lib))
+
+(executable
+ (name compare_pi)
+ (modules compare_pi)
+ (libraries pi_engine_lib))

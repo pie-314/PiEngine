@@ -1,4 +1,23 @@
+# PiEngine binaries
 pi
 piengine
-./_local_learn/*
+
+# Ignore all text files
+*.txt
+
+# Build directories
+_build/
 _local_learn/
+
+# C artifacts
+C/src/*.o
+C/piengine
+
+# OCaml artifacts (redundant if OCaml/.gitignore exists, but good for safety)
+OCaml/_build/
+OCaml/*.exe
+
+# Editor/OS files
+.DS_Store
+*~
+*.swp
