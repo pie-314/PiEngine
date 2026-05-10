@@ -4,6 +4,14 @@ let constant_a = of_int 13591409
 let constant_b = of_int 545140134
 let constant_c3 = of_string "10939058860032000"
 
+let threshold = of_int 10000000
+
+let max_domains =
+  Domain.recommended_domain_count ()
+
+let active_domains =
+  Atomic.make 1
+
 let rec compute_bs n1 n2 =
   if equal (sub n2 n1) one then
     if equal n1 zero then
@@ -11,38 +19,107 @@ let rec compute_bs n1 n2 =
     else
       let p =
         mul
-          (mul (sub (mul (of_int 6) n1) (of_int 5))
-               (sub (mul (of_int 2) n1) one))
+          (mul
+             (sub (mul (of_int 6) n1) (of_int 5))
+             (sub (mul (of_int 2) n1) one))
           (sub (mul (of_int 6) n1) one)
       in
+
       let q =
         mul (pow n1 3) constant_c3
       in
-      let tmp =
-        add (mul constant_b n1) constant_a
-      in
+
       let t =
-        mul p tmp
+        mul p
+          (add (mul constant_b n1) constant_a)
       in
+
       let t =
-        if equal (erem n1 (of_int 2)) one then neg t else t
+        if equal (erem n1 (of_int 2)) one
+        then neg t
+        else t
       in
+
       (p, q, t)
 
   else
-    let m = div (add n1 n2) (of_int 2) in
+    let m =
+      div (add n1 n2) (of_int 2)
+    in
 
-    let (p1, q1, t1) = compute_bs n1 m in
-    let (p2, q2, t2) = compute_bs m n2 in
+    let range_size =
+      sub n2 n1
+    in
 
-    let p = mul p1 p2 in
-    let q = mul q1 q2 in
+    let can_spawn =
+      lt threshold range_size
+      &&
+      Atomic.get active_domains < max_domains
+    in
 
-    let temp1 = mul t1 q2 in
-    let temp2 = mul p1 t2 in
-    let t = add temp1 temp2 in
+    if can_spawn then begin
+      Atomic.incr active_domains;
 
-    (p, q, t)
+      let left_domain =
+        Domain.spawn (fun () ->
+          let result =
+            compute_bs n1 m
+          in
+          Atomic.decr active_domains;
+          result
+        )
+      in
+
+      let (p2, q2, t2) =
+        compute_bs m n2
+      in
+
+      let (p1, q1, t1) =
+        Domain.join left_domain
+      in
+
+      let p =
+        mul p1 p2
+      in
+
+      let q =
+        mul q1 q2
+      in
+
+      let t =
+        add
+          (mul t1 q2)
+          (mul p1 t2)
+      in
+
+      (p, q, t)
+
+    end else begin
+
+      let (p1, q1, t1) =
+        compute_bs n1 m
+      in
+
+      let (p2, q2, t2) =
+        compute_bs m n2
+      in
+
+      let p =
+        mul p1 p2
+      in
+
+      let q =
+        mul q1 q2
+      in
+
+      let t =
+        add
+          (mul t1 q2)
+          (mul p1 t2)
+      in
+
+      (p, q, t)
+    end
 
 let compute_pi digits =
   let terms = add (div (of_int digits) (of_int 14)) (of_int 2) in
