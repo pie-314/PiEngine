@@ -1,166 +1,140 @@
 # PiEngine
 
-## High Precision π Calculator in C
+[![Milestone](https://img.shields.io/badge/Milestone-1B_Digits-gold.svg)](https://github.com/yourusername/PiEngine)
+[![Language](https://img.shields.io/badge/Language-OCaml%20%7C%20C-blue.svg)](#)
+[![Algorithm](https://img.shields.io/badge/Algorithm-Chudnovsky-green.svg)](#how-the-algorithm-works)
 
-PiEngine is a high-precision π (pi) calculator written in C using the **Chudnovsky algorithm** with the **GMP** and **MPFR** libraries for arbitrary-precision arithmetic.
-
-This project is built as a systems + mathematics project to learn:
-
-* Numerical algorithms
-* High precision arithmetic
-* Performance optimization
-* Large number computation
-* Clean C project structure
+PiEngine is a high-performance Pi calculator capable of computing billions of digits with extreme precision. It features dual implementations in OCaml and C, serving as a benchmark for high-precision arithmetic and functional vs. systems programming paradigms.
 
 ---
 
-## Project Goals
-
-PiEngine is being developed in multiple versions:
-
-| Version | Target              | Method                        |
-| ------- | ------------------- | ----------------------------- |
-| V1      | 100,000 digits      | Basic Chudnovsky (factorials) |
-| V2      | 1,000,000 digits    | Recurrence optimization       |
-| V3      | 10,000,000 digits   | Binary splitting              |
-| V4      | 100,000,000+ digits | FFT + Multi-threading         |
-
-### Current Version: V2
-
-**Goal:** Compute **1,000,000 digits of π** correctly and reliably.
-
-PiEngine has now reached the **1,000,000 digits** milestone.
-This version focuses on improving performance while preserving correctness and clean project structure.
+## Recent Achievement: 1,000,000,000 Digits
+We have successfully reached the **1 Billion Digits** milestone! By leveraging the Chudnovsky algorithm and binary splitting, PiEngine efficiently handles massive numbers. Note that computing 1B digits and beyond is primarily dependent on available **RAM**, as the intermediate values in the binary splitting process grow significantly.
 
 ---
 
-## How The Algorithm Works
+## Features
 
-PiEngine uses the **Chudnovsky series**:
+- Dual Implementations (Branch-separated):
+  - **OCaml** (`main` branch): Utilizing the powerful Zarith library for clean, high-performance functional code.
+  - **C** (`v3-C` branch): Leveraging GMP and MPFR for maximum low-level efficiency.
+- Binary Splitting: Optimized series summation that reduces the complexity of large multiplications.
+- High Performance: Designed to scale from thousands to billions of digits.
+- Cross-Platform: Tested on Linux and macOS.
+- Robust CLI: Complete control over precision, output, and verbose timing metrics.
 
-![Chudnovsky formula](https://latex.codecogs.com/png.image?%5Cdpi%7B160%7D%20%5Cpi%20%3D%20%5Cfrac%7B426880%5Csqrt%7B10005%7D%7D%7B%5Csum_%7Bk%3D0%7D%5E%7B%5Cinfty%7D%20%5Cmathrm%7Bterm%7D_k%7D)
+---
 
-The individual term is:
+## How the Algorithm Works
 
-![Chudnovsky term formula](https://latex.codecogs.com/png.image?%5Cdpi%7B160%7D%20%5Cmathrm%7Bterm%7D_k%20%3D%20%5Cfrac%7B(-1)%5Ek(6k)%21(13591409%20%2B%20545140134k)%7D%7B(3k)%21(k!)%5E3%20640320%5E%7B3k%7D%7D)
+### Chudnovsky Series
+PiEngine uses the world-record Chudnovsky algorithm, which converges at approximately 14 digits per term:
 
-Each term of the series adds approximately **14 digits** of precision.
+$$\frac{1}{\pi} = 12 \sum_{k=0}^{\infty} \frac{(-1)^k (6k)! (13591409 + 545140134k)}{(3k)!(k!)^3 640320^{3k+3/2}}$$
 
-The program uses:
+### Binary Splitting
+To compute this series efficiently, we use Binary Splitting. Instead of computing each term and adding it to a running total, we recursively split the series into two halves. This allows us to use large, efficient multiplications (Karatsuba or FFT-based) provided by GMP and Zarith, significantly speeding up the process for millions of digits. For very large digit counts, the memory usage becomes the primary bottleneck.
 
-* **GMP (mpz_t)** → big integers (factorials, powers)
-* **MPFR (mpfr_t)** → high precision floating point (division, square root, final π)
+---
 
-Flow of computation:
+## Roadmap and Next Goal: 10,000,000,000 Digits
 
+Our next target is the 10 Billion Digits milestone. To reach this level of performance and handle the increasing computational load, future updates will focus on:
+
+- Parallelization: Implementing multi-threaded binary splitting to utilize all available CPU cores.
+- Memory Optimization: Reducing the memory footprint during the division and square root phases.
+- Disk-based Computation: Exploring swapping strategies for digit counts that exceed available RAM.
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+#### For OCaml (on `main` branch)
+- OPAM
+- Dune
+- zarith library
+
+```bash
+opam install zarith dune
 ```
-Compute C = 426880 * sqrt(10005)
 
-sum = 0
-for k = 0 to N:
-    compute term_k using factorial formula
-    sum += term_k
+#### For C (on `v3-C` branch)
+- GMP
+- MPFR
 
-pi = C / sum
+```bash
+# Ubuntu/Debian
+sudo apt install libgmp-dev libmpfr-dev
+# Arch Linux
+sudo pacman -S gmp mpfr
 ```
+
+---
+
+## Build and Run
+
+### OCaml Version (Default - `main` branch)
+The OCaml version offers a balance of safety and performance.
+
+```bash
+dune build
+dune exec bin/main.exe -- --digits 1000000 --verbose --output pi.txt
+```
+
+### C Version (Switch to `v3-C` branch)
+The C version provides low-level control and direct access to GMP primitives.
+
+```bash
+git checkout v3-C
+make
+./piengine --digits 1000000 --verbose --output pi.txt
+```
+
+### CLI Options
+Both versions support identical CLI flags:
+- -d, --digits NUM: Number of digits to compute (default: 1000).
+- -o, --output FILE: Write the result to a file instead of stdout.
+- -v, --verbose: Display detailed timing and performance information.
+- -h, --help: Show help message.
 
 ---
 
 ## Project Structure
 
-```
-PiEngine/
-├── Makefile
-├── README.md
-├── src/
-│   ├── main.c          → Program entry point
-│   ├── chudnovsky.c    → Pi calculation logic
-│   ├── chudnovsky.h
-│   ├── cli.c           → Command line interface
-│   ├── cli.h
-│   ├── utils.c         → Timer, progress, helpers
-│   ├── bigint.c        → Custom BigInt (future use)
-│   ├── bigint.h
-│
-└── tests/
-    └── test_pi.c
-```
+The project is organized into two primary branches:
 
----
-
-## Build Instructions
-
-### Install Dependencies
-
-**Arch Linux**
-
-```bash
-sudo pacman -S gmp mpfr
-```
-
-**Ubuntu / Debian**
-
-```bash
-sudo apt install libgmp-dev libmpfr-dev
-```
-
----
-
-### Build
-
-```bash
-make
-```
-
-### Run
-
-```bash
-./piengine
-```
-
----
-
-## Current Limitations (V2)
-
-Version 2 improves performance over the basic factorial-based approach, but it is still not the final architecture for very large digit counts.
-
-Because of this, Version 2 is expected to work efficiently up to:
-
-> **~1,000,000 digits**
-
-Future versions will implement faster algorithms.
-
----
-
-## Future Improvements
-
-Planned upgrades:
-
-* [ ] CLI arguments (`--digits`, `--output`)
-* [ ] Save π to file
-* [ ] Timing / benchmarking
-* [ ] Progress indicator
-* [ ] Recurrence formula (faster term calculation)
-* [ ] Binary splitting algorithm
-* [ ] Multi-threaded computation
+- **`main`**: Contains the OCaml implementation.
+  - `bin/`: CLI application.
+  - `lib/`: Core Chudnovsky logic.
+  - `test/`: Regression and comparison tests.
+- **`v3-C`**: Contains the C implementation.
+  - `src/`: Core logic and CLI.
+  - `tests/`: Unit tests.
 
 ---
 
 ## Milestones
 
-| Milestone   | Target           |
-| ----------- | ---------------- |
-| Milestone 1 | 1,000 digits     |
-| Milestone 2 | 10,000 digits    |
-| Milestone 3 | 100,000 digits   |
-| Milestone 4 | 1,000,000 digits |
+| Milestone | Digits | Status |
+| :--- | :--- | :--- |
+| Milestone 1 | 1,000 | Complete |
+| Milestone 2 | 1,000,000 | Complete |
+| Milestone 3 | 100,000,000 | Complete |
+| Milestone 4 | 1,000,000,000 | **Achieved** |
+| **Milestone 5** | **10,000,000,000** | **In Progress / Planned** |
 
 ---
 
-## Summary
+## Testing
+We ensure correctness by comparing results between the OCaml and C implementations, as well as against known reference constants.
 
-PiEngine is not just a π calculator.
-It is a project to explore **high-precision computation, numerical methods, and performance optimization in C**.
+```bash
+# Run OCaml tests (on main branch)
+./test_pi.sh
+```
 
-**Current Milestone:** 1,000,000 digits achieved
-**Next Goal:** 10,000,000 digits
+---
+
+*“Mathematics is the music of reason.”*
