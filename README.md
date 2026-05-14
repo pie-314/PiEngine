@@ -9,15 +9,15 @@ PiEngine is a high-performance Pi calculator capable of computing billions of di
 ---
 
 ## Recent Achievement: 1,000,000,000 Digits
-We have successfully reached the 1 Billion Digits milestone. By leveraging the Chudnovsky algorithm and binary splitting, PiEngine efficiently handles massive numbers that require hundreds of megabytes of memory.
+We have successfully reached the **1 Billion Digits** milestone! By leveraging the Chudnovsky algorithm and binary splitting, PiEngine efficiently handles massive numbers. Note that computing 1B digits and beyond is primarily dependent on available **RAM**, as the intermediate values in the binary splitting process grow significantly.
 
 ---
 
 ## Features
 
-- Dual Implementations:
-  - OCaml: Utilizing the powerful Zarith library for clean, high-performance functional code.
-  - C: Leveraging GMP and MPFR for maximum low-level efficiency.
+- Dual Implementations (Branch-separated):
+  - **OCaml** (`main` branch): Utilizing the powerful Zarith library for clean, high-performance functional code.
+  - **C** (`v3-C` branch): Leveraging GMP and MPFR for maximum low-level efficiency.
 - Binary Splitting: Optimized series summation that reduces the complexity of large multiplications.
 - High Performance: Designed to scale from thousands to billions of digits.
 - Cross-Platform: Tested on Linux and macOS.
@@ -33,7 +33,7 @@ PiEngine uses the world-record Chudnovsky algorithm, which converges at approxim
 $$\frac{1}{\pi} = 12 \sum_{k=0}^{\infty} \frac{(-1)^k (6k)! (13591409 + 545140134k)}{(3k)!(k!)^3 640320^{3k+3/2}}$$
 
 ### Binary Splitting
-To compute this series efficiently, we use Binary Splitting. Instead of computing each term and adding it to a running total, we recursively split the series into two halves. This allows us to use large, efficient multiplications (Karatsuba or FFT-based) provided by GMP and Zarith, significantly speeding up the process for millions of digits.
+To compute this series efficiently, we use Binary Splitting. Instead of computing each term and adding it to a running total, we recursively split the series into two halves. This allows us to use large, efficient multiplications (Karatsuba or FFT-based) provided by GMP and Zarith, significantly speeding up the process for millions of digits. For very large digit counts, the memory usage becomes the primary bottleneck.
 
 ---
 
@@ -51,7 +51,7 @@ Our next target is the 10 Billion Digits milestone. To reach this level of perfo
 
 ### Prerequisites
 
-#### For OCaml
+#### For OCaml (on `main` branch)
 - OPAM
 - Dune
 - zarith library
@@ -60,7 +60,7 @@ Our next target is the 10 Billion Digits milestone. To reach this level of perfo
 opam install zarith dune
 ```
 
-#### For C
+#### For C (on `v3-C` branch)
 - GMP
 - MPFR
 
@@ -75,20 +75,19 @@ sudo pacman -S gmp mpfr
 
 ## Build and Run
 
-### OCaml Version (Recommended)
+### OCaml Version (Default - `main` branch)
 The OCaml version offers a balance of safety and performance.
 
 ```bash
-cd OCaml
 dune build
 dune exec bin/main.exe -- --digits 1000000 --verbose --output pi.txt
 ```
 
-### C Version
+### C Version (Switch to `v3-C` branch)
 The C version provides low-level control and direct access to GMP primitives.
 
 ```bash
-cd C
+git checkout v3-C
 make
 ./piengine --digits 1000000 --verbose --output pi.txt
 ```
@@ -104,17 +103,15 @@ Both versions support identical CLI flags:
 
 ## Project Structure
 
-```text
-PiEngine/
-├── OCaml/               # High-level functional implementation
-│   ├── bin/             # CLI application
-│   ├── lib/             # Core Chudnovsky logic
-│   └── test/            # Regression and comparison tests
-├── C/                   # Systems-level implementation
-│   ├── src/             # Core logic and CLI
-│   └── tests/           # Unit tests
-└── README.md            # Project documentation
-```
+The project is organized into two primary branches:
+
+- **`main`**: Contains the OCaml implementation.
+  - `bin/`: CLI application.
+  - `lib/`: Core Chudnovsky logic.
+  - `test/`: Regression and comparison tests.
+- **`v3-C`**: Contains the C implementation.
+  - `src/`: Core logic and CLI.
+  - `tests/`: Unit tests.
 
 ---
 
@@ -125,7 +122,7 @@ PiEngine/
 | Milestone 1 | 1,000 | Complete |
 | Milestone 2 | 1,000,000 | Complete |
 | Milestone 3 | 100,000,000 | Complete |
-| Milestone 4 | 1,000,000,000 | Achieved |
+| Milestone 4 | 1,000,000,000 | **Achieved** |
 | **Milestone 5** | **10,000,000,000** | **In Progress / Planned** |
 
 ---
@@ -134,8 +131,7 @@ PiEngine/
 We ensure correctness by comparing results between the OCaml and C implementations, as well as against known reference constants.
 
 ```bash
-# Run OCaml tests
-cd OCaml
+# Run OCaml tests (on main branch)
 ./test_pi.sh
 ```
 
